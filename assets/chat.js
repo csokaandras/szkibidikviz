@@ -27,8 +27,14 @@ socket.on('message', (from, message)=>{
 });
 
 socket.on('startQuiz', (user)=>{
-    renderMessage('System', user.username + ' start Quiz...');
+    renderMessage('System', 'Start Quiz...')
+    console.log("START")
+    socket.emit('getNewQuestion')
 });
+
+socket.on('newQuestion', (question)=>{
+    renderMessage('System', question[0].question)
+})
 
 function renderMessage(sender, message){
     let newMessage = document.createElement('div');

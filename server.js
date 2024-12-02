@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
@@ -8,12 +9,13 @@ var session = require('express-session');
 const moment = require('moment');
 const server = http.createServer(app);
 const io = socketio(server);
-
-const port = 3000;
+const db = require('./assets/database');
+const port = process.env.PORT;
 
 const { users, rooms, userJoin, userLeave, getRoomUsers, getCurrentUser, inRoomsList, roomLeave } = require('./utils');
 
 app.use('/assets', express.static('assets'));
+
 
 
 app.get('/', (req, res)=>{
@@ -41,9 +43,7 @@ io.on('connection', (socket)=>{
         io.to(session.room).emit('userConnected', user);
 
         if(getRoomUsers(session.room).length >= 2) {
-            io.to(session.room).emit('startQuiz', getRoomUsers(session.room));
-
-
+            io.to(session.room).emit('startQuiz');
         }
 
         if (!inRoomsList(session.room)){
@@ -51,6 +51,17 @@ io.on('connection', (socket)=>{
             io.emit('updateRoomList', rooms); 
         }
     });
+
+    socket.on('getNewQuestion', ()=>{
+        console.log("GET NEW QUEST")
+        db.query(`SELECT * FROM questions ORDER BY rand() limit 1;`, (err, results)=>{
+            if (err){
+                console.log("Hiba a szerverhez való csatlakozáskor")
+                return
+            }
+            io.to(session.room).emit('newQuestion', results)
+        })
+    })
 
     socket.on('leaveChat', ()=>{
         let user = getCurrentUser(socket.id);
