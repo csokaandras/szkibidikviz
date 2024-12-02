@@ -26,6 +26,10 @@ socket.on('message', (from, message)=>{
     renderMessage(from, message);
 });
 
+socket.on('startQuiz', (user)=>{
+    renderMessage('System', user.username + ' start Quiz...');
+});
+
 function renderMessage(sender, message){
     let newMessage = document.createElement('div');
     newMessage.classList.add('msg');
