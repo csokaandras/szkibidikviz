@@ -39,6 +39,13 @@ io.on('connection', (socket)=>{
         socket.join(session.room);
         io.to(session.room).emit('updateRoomUsers', getRoomUsers(session.room));
         io.to(session.room).emit('userConnected', user);
+
+        if(getRoomUsers(session.room).length >= 2) {
+            io.to(session.room).emit('startQuiz', getRoomUsers(session.room));
+
+
+        }
+
         if (!inRoomsList(session.room)){
             rooms.push(session.room);
             io.emit('updateRoomList', rooms); 
