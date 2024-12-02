@@ -39,6 +39,9 @@ io.on('connection', (socket)=>{
         socket.join(session.room);
         io.to(session.room).emit('updateRoomUsers', getRoomUsers(session.room));
         io.to(session.room).emit('userConnected', user);
+
+        
+
         if (!inRoomsList(session.room)){
             rooms.push(session.room);
             io.emit('updateRoomList', rooms); 
