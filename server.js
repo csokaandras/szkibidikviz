@@ -12,7 +12,7 @@ const io = socketio(server);
 const db = require('./assets/database');
 const port = process.env.PORT;
 
-const { users, rooms, userJoin, userLeave, getRoomUsers, getCurrentUser, inRoomsList, roomLeave } = require('./utils');
+const { users, rooms, questions, answers, userJoin, userLeave, getRoomUsers, getCurrentUser, inRoomsList, roomLeave, newQuestion, answerQuestion, lastQuestion, roomLastQuestion, countAnswersOnQuestion } = require('./utils');
 
 app.use('/assets', express.static('assets'));
 
@@ -43,23 +43,26 @@ io.on('connection', (socket)=>{
         io.to(session.room).emit('userConnected', user);
 
         if(getRoomUsers(session.room).length >= 2) {
-            io.to(session.room).emit('startQuiz');
+            io.to(session.room).emit("showNewQuestion", roomLastQuestion(session.room))
         }
-
+        
         if (!inRoomsList(session.room)){
             rooms.push(session.room);
-            io.emit('updateRoomList', rooms); 
+            io.emit('updateRoomList', rooms);
+            io.to(session.room).emit('startQuiz');
         }
     });
 
+    
+    
     socket.on('getNewQuestion', ()=>{
-        console.log("GET NEW QUEST")
         db.query(`SELECT * FROM questions ORDER BY rand() limit 1;`, (err, results)=>{
             if (err){
                 console.log("Hiba a szerverhez való csatlakozáskor")
                 return
             }
-            io.to(session.room).emit('newQuestion', results)
+            console.log(results[0])
+            newQuestion(session.room, results[0])
         })
     })
 
