@@ -12,78 +12,97 @@ const io = socketio(server);
 const db = require('./assets/database');
 const port = process.env.PORT;
 
-const { users, rooms, questions, answers, userJoin, userLeave, getRoomUsers, getCurrentUser, inRoomsList, roomLeave, newQuestion, answerQuestion, lastQuestion, roomLastQuestion, countAnswersOnQuestion } = require('./utils');
+const {
+  users,
+  rooms,
+  questions,
+  answers,
+  userJoin,
+  userLeave,
+  getRoomUsers,
+  getCurrentUser,
+  inRoomsList,
+  roomLeave,
+  newQuestion,
+  answerQuestion,
+  lastQuestion,
+  roomLastQuestion,
+  countAnswersOnQuestion,
+} = require('./utils');
 
 app.use('/assets', express.static('assets'));
 
-
-
-app.get('/', (req, res)=>{
-    res.render('index.ejs');
+app.get('/', (req, res) => {
+  res.render('index.ejs');
 });
 
-app.get('/chat/:room/:user', (req, res)=>{
-    // let { name, room } = req.body;
-    session.user = req.params.user;
-    session.room = req.params.room;
-    res.render('chat.ejs', {user:session.user, room:session.room});
+app.get('/chat/:room/:user', (req, res) => {
+  // let { name, room } = req.body;
+  session.user = req.params.user;
+  session.room = req.params.room;
+
+  res.render('chat.ejs', { user: session.user, room: session.room });
 });
 
-io.on('connection', (socket)=>{
-    console.log(socket.id)
+io.on('connection', (socket) => {
+  console.log(socket.id);
 
-    socket.on('getRoomList', ()=>{
-        io.emit('updateRoomList', rooms)
+  socket.on('getRoomList', () => {
+    io.emit('updateRoomList', rooms);
+  });
+
+  socket.on('joinToChat', () => {
+    let user = userJoin(socket.id, session.user, session.room);
+
+    socket.join(session.room);
+
+    io.to(session.room).emit('updateRoomUsers', getRoomUsers(session.room));
+    io.to(session.room).emit('userConnected', user);
+
+    if (getRoomUsers(session.room).length >= 2) {
+      io.to(session.room).emit('showNewQuestion', roomLastQuestion(session.room));
+    }
+
+    if (!inRoomsList(session.room)) {
+      rooms.push(session.room);
+      io.emit('updateRoomList', rooms);
+      io.to(session.room).emit('startQuiz');
+    }
+  });
+
+  socket.on('getNewQuestion', () => {
+    db.query(`SELECT * FROM questions ORDER BY rand() limit 1;`, (err, results) => {
+      if (err) {
+        console.log('Hiba a szerverhez való csatlakozáskor');
+        return;
+      }
+
+      console.log(results[0]);
+      newQuestion(session.room, results[0]);
     });
+  });
 
-    socket.on('joinToChat', ()=>{
-        let user = userJoin(socket.id, session.user, session.room);
-        socket.join(session.room);
-        io.to(session.room).emit('updateRoomUsers', getRoomUsers(session.room));
-        io.to(session.room).emit('userConnected', user);
+  socket.on('leaveChat', () => {
+    let user = getCurrentUser(socket.id);
 
-        if(getRoomUsers(session.room).length >= 2) {
-            io.to(session.room).emit("showNewQuestion", roomLastQuestion(session.room))
-        }
-        
-        if (!inRoomsList(session.room)){
-            rooms.push(session.room);
-            io.emit('updateRoomList', rooms);
-            io.to(session.room).emit('startQuiz');
-        }
-    });
+    userLeave(socket.id);
 
-    
-    
-    socket.on('getNewQuestion', ()=>{
-        db.query(`SELECT * FROM questions ORDER BY rand() limit 1;`, (err, results)=>{
-            if (err){
-                console.log("Hiba a szerverhez való csatlakozáskor")
-                return
-            }
-            console.log(results[0])
-            newQuestion(session.room, results[0])
-        })
-    })
+    io.to(user.room).emit('message', 'System', `${user.username} left the chat...`);
+    io.to(user.room).emit('updateRoomUsers', getRoomUsers(user.room));
 
-    socket.on('leaveChat', ()=>{
-        let user = getCurrentUser(socket.id);
-        userLeave(socket.id);
-        io.to(user.room).emit('message', 'System', `${user.username} left the chat...`);
-        io.to(user.room).emit('updateRoomUsers', getRoomUsers(user.room));
-        if (getRoomUsers(user.room).length == 0){
-            roomLeave(user.room)
-            io.emit('updateRoomList', rooms); 
-        }
-    });
+    if (getRoomUsers(user.room).length == 0) {
+      roomLeave(user.room);
+      io.emit('updateRoomList', rooms);
+    }
+  });
 
-    socket.on('sendMsg', (msg)=>{
-        let user = getCurrentUser(socket.id);
-        io.to(user.room).emit('message', user, msg);
-    });
+  socket.on('sendMsg', (msg) => {
+    let user = getCurrentUser(socket.id);
+
+    io.to(user.room).emit('message', user, msg);
+  });
 });
 
-
-server.listen(port, ()=>{
-    console.log(`Server listening on http://localhost:${port}`);
+server.listen(port, () => {
+  console.log(`Server listening on http://localhost:${port}`);
 });
