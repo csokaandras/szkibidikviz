@@ -52,12 +52,12 @@ footer{
 }
 
 .outgoing{
-    background-color: rgba(155, 197, 116, 0.3);
+    background-color: #343434;
 
 }
 
 .incoming{
-    background-color: rgba(91, 104, 163, 0.3);
+    background-color: #4e545c;
 }
 
 .timestamp{
