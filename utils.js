@@ -3,8 +3,33 @@ let rooms = [];
 let questions = [];
 let answers = [];
 
+class User {
+    constructor(id, username, room) {
+        this.id = id;
+        this.username = username;
+        this.room = room;
+    }
+}
+
+class Question {
+    constructor(room, question, answer) {
+        this.room = room;
+        this.question = question;
+        this.answer = answer;
+    }
+}
+
+class Answer {
+    constructor(user, question, diff, room) {
+        this.user = user;
+        this.question = question;
+        this.diff = diff;
+        this.room = room;
+    }
+}
+
 function userJoin(id, username, room) {
-  const user = { id, username, room };
+  const user = new User ( id, username, room );
 
   users.push(user);
 
@@ -44,7 +69,7 @@ function inRoomsList(room) {
 }
 
 function newQuestion(room, question) {
-  const quest = { room, question };
+  const quest = new Question ( room, question );
 
   questions.push(quest);
 
@@ -56,6 +81,7 @@ function lastQuestion(room) {
 }
 
 function roomLastQuestion(room) {
+    console.log(questions)
   return questions.find((item) => item.room === room);
 }
 
@@ -72,7 +98,7 @@ function answerQuestion(question, room, user, useranswer) {
     diff = question.answer - useranswer;
   }
 
-  const answer = { question, user, diff, room };
+  const answer = new Answer ( question, user, diff, room );
   answers.push(answer);
 
   return answers;
