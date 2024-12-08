@@ -5,12 +5,15 @@ let answers = [];
 
 function userJoin(id, username, room) {
   const user = { id, username, room };
+
   users.push(user);
+
   return user;
 }
 
 function userLeave(id) {
   let idx = users.findIndex((user) => user.id === id);
+
   if (idx != -1) {
     users.splice(idx, 1);
   }
@@ -20,6 +23,7 @@ function userLeave(id) {
 
 function roomLeave(room) {
   let idx = rooms.findIndex((item) => item === room);
+
   if (idx > -1) {
     rooms.splice(idx, 1);
   }
