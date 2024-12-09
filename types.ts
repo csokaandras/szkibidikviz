@@ -11,8 +11,24 @@ export class Room {
     this.answers = [];
   }
 
-  getUser = (name: string) => this.users.find(x => x.username == name);
+  getUser = (id: string) => this.users.find(x => x.id == id);
+  getUserByName = (name: string) => this.users.find(x => x.username == name);
   newQuestion = (question: Question) => this.questions.push(question);
+
+  userJoin(user: User) {
+    if (this.users.find(x => x.id == user.id))
+      throw Error('user already in room');
+
+    this.users.push(user);
+  }
+
+  userLeave(user: User | string) {
+    // if user is id we convert it to user object
+    if (typeof user == 'string')
+      user = this.getUser(user);
+
+    this.users = this.users.filter(x => x != user);
+  }
 
   get isAtMaxQuestionCount() {
     return this.questions;
