@@ -1,14 +1,15 @@
-require('dotenv').config();
-const express = require('express');
-const http = require('http');
-const socketio = require('socket.io');
-const ejs = require('ejs');
+import dotenv from 'dotenv';
+import express, { Express } from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import * as ejs from 'ejs'
+import * as moment from 'moment';
+import session from 'express-session';
 
+dotenv.config();
 const app = express();
-var session = require('express-session');
-const moment = require('moment');
 const server = http.createServer(app);
-const io = socketio(server);
+const io = new Server(server);
 const db = require('./assets/database');
 const port = process.env.PORT;
 
@@ -78,6 +79,7 @@ io.on('connection', (socket) => {
       }
 
       console.log(results[0]);
+      io.to(session.room).emit('showNewQuestion', results[0])
       newQuestion(session.room, results[0]);
     });
   });

@@ -33,7 +33,7 @@ socket.on('startQuiz', () => {
 });
 
 socket.on('showNewQuestion', (result) => {
-  renderMessage('System', result.question.question);
+  renderMessage('System', result.question);
 });
 
 function renderMessage(sender, message) {
