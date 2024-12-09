@@ -88,7 +88,11 @@ function countAnswersOnQuestion(question) {
 }
 
 function tryAnswerQuestion(user, msg) {
+  const answer = parseInt(msg);
 
+  // get last question in user.room
+
+  // create new answer and push
 }
 
 function answerQuestion(question, room, user, useranswer) {
