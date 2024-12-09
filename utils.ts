@@ -1,46 +1,51 @@
-let users: User[] = [];
-let rooms: string[] = [];
-let questions: Question[] = [];
-let answers: Answer[] = [];
+let rooms: Room[] = [];
+
+class Room{
+  users: User[]
+  questions: Question[]
+  answers: Answer[]
+}
 
 class User {
   id: string
   username: string;
-  room: string;
 }
 class Question {
   id:number
   question: string
   answer: number
-  room: string
 }
 
 class Answer {
   user: User
   question: Question
   diff: number
-  room: string
 }
 
-function userJoin(id, username, room) {
-  const user: User = {id, username, room} ;
-
-  users.push(user);
+function userJoin(id: string, username: string, room: Room) {
+  const user: User = {id, username} ;
+  
+  room.users.push(user);
 
   return user;
 }
 
 function userLeave(id) {
-  let idx = users.findIndex((user) => user.id === id);
+  let idx: number
+  let userroom: Room
+  rooms.forEach(room =>{
+    userroom = room
+    idx = room.users.findIndex((user) => user.id === id);
+  })
 
   if (idx != -1) {
-    users.splice(idx, 1);
+    userroom.users.splice(idx, 1);
   }
 
-  return users;
+  return userroom.users;
 }
 
-function roomLeave(room) {
+function roomLeave(room: Room) {
   let idx = rooms.findIndex((item) => item === room);
 
   if (idx > -1) {
@@ -50,44 +55,39 @@ function roomLeave(room) {
   return rooms;
 }
 
-function getRoomUsers(room) {
-  return users.filter((user) => user.room === room);
+function getRoomUsers(room:Room) {
+  return room.users;
 }
 
 function getCurrentUser(id) {
-  return users.find((user) => user.id === id);
+  rooms.forEach(room =>{
+    return room.users.find((user) => user.id === id);
+  })
 }
 
-function inRoomsList(room) {
+function inRoomsList(room: Room) {
   return rooms.find((item) => item === room) ? true : false;
 }
 
-function newQuestion(room, question) {
-  const quest: Question = new Question;
-  quest.id = question.id
-  quest.question = question.question
-  quest.answer = question.answer
-  quest.room = room
-
-  questions.push(quest);
-
-  return questions;
+function newQuestion(room: Room, question: Question) {
+  room.questions.push(question);
+  return room.questions;
 }
 
-function lastQuestion(room) {
-  return questions.filter(item => item.room === room).length == 10 ? true : false;
+function lastQuestion(room: Room) {
+  return room.questions.length == 10 ? true : false;
 }
 
-function roomLastQuestion(room) {
-  console.log(questions)
-  return questions.find((item) => item.room === room);
+function roomLastQuestion(room: Room) {
+  console.log(room.questions)
+  return room.questions[room.questions.length]
 }
 
-function countAnswersOnQuestion(question) {
-  return answers.find((item) => item.question === question);
+function countAnswersOnQuestion(room: Room, question: Question) {
+  return room.answers.find((item) => item.question === question);
 }
 
-function answerQuestion(question, room, user, useranswer) {
+function answerQuestion(question: Question, room: Room, user: User, useranswer: number) {
   let diff = 0;
 
   if (useranswer > question.answer) {
@@ -96,20 +96,18 @@ function answerQuestion(question, room, user, useranswer) {
     diff = question.answer - useranswer;
   }
 
-  const answer: Answer  = {question, user, diff, room};
-  answers.push(answer);
+  const answer: Answer  = {question, user, diff};
+  room.answers.push(answer);
 
-  return answers;
+  return room.answers;
 }
 
 module.exports = {
-  users,
   rooms,
-  questions,
-  answers,
   User,
   Question,
   Answer,
+  Room,
   userJoin,
   userLeave,
   roomLeave,

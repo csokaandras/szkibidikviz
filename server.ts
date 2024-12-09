@@ -21,6 +21,7 @@ const {
   User,
   Question,
   Answer,
+  Room,
   userJoin,
   userLeave,
   getRoomUsers,
