@@ -87,6 +87,10 @@ function countAnswersOnQuestion(question) {
   return answers.find((item) => item.question === question);
 }
 
+function tryAnswerQuestion(user, msg) {
+
+}
+
 function answerQuestion(question, room, user, useranswer) {
   let diff = 0;
 

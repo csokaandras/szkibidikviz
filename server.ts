@@ -28,7 +28,7 @@ const {
   inRoomsList,
   roomLeave,
   newQuestion,
-  answerQuestion,
+  tryAnswerQuestion,
   lastQuestion,
   roomLastQuestion,
   countAnswersOnQuestion,
@@ -102,6 +102,8 @@ io.on('connection', (socket) => {
 
   socket.on('sendMsg', (msg) => {
     let user = getCurrentUser(socket.id);
+    
+    tryAnswerQuestion(user, msg);
 
     io.to(user.room).emit('message', user, msg);
   });
