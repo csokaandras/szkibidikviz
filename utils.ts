@@ -1,5 +1,5 @@
 let users: User[] = [];
-let rooms: number[] = [];
+let rooms: string[] = [];
 let questions: Question[] = [];
 let answers: Answer[] = [];
 
