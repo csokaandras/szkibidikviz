@@ -4,6 +4,8 @@ let sendBtn = document.querySelector('#sendBtn');
 let newMsgField = document.querySelector('#newmsg');
 const socket = io();
 
+const messageToggle = false;
+
 socket.emit('joinToChat');
 
 socket.on('userConnected', (user) => {
@@ -57,6 +59,7 @@ sendBtn.addEventListener('click', () => {
   if (newMsgField.value != '') {
     socket.emit('sendMsg', newMsgField.value);
     newMsgField.value = '';
+    newMsgField.disabled = true;
   }
 });
 
@@ -65,6 +68,7 @@ newMsgField.addEventListener('keypress', (event) => {
     if (newMsgField.value != '') {
       socket.emit('sendMsg', newMsgField.value);
       newMsgField.value = '';
+      newMsgField.disabled = true;
     }
   }
 });
