@@ -1,35 +1,29 @@
-let users = [];
-let rooms = [];
-let questions = [];
-let answers = [];
+let users: User[] = [];
+let rooms: number[] = [];
+let questions: Question[] = [];
+let answers: Answer[] = [];
 
 class User {
-    constructor(id, username, room) {
-        this.id = id;
-        this.username = username;
-        this.room = room;
-    }
+  id: string
+  username: string;
+  room: string;
 }
-
 class Question {
-    constructor(room, question, answer) {
-        this.room = room;
-        this.question = question;
-        this.answer = answer;
-    }
+  id:number
+  question: string
+  answer: number
+  room: string
 }
 
 class Answer {
-    constructor(user, question, diff, room) {
-        this.user = user;
-        this.question = question;
-        this.diff = diff;
-        this.room = room;
-    }
+  user: User
+  question: Question
+  diff: number
+  room: string
 }
 
 function userJoin(id, username, room) {
-  const user = new User ( id, username, room );
+  const user: User = {id, username, room} ;
 
   users.push(user);
 
@@ -69,17 +63,21 @@ function inRoomsList(room) {
 }
 
 function newQuestion(room, question) {
-  const quest = new Question ( room, question );
+  const quest: Question = new Question;
+  quest.id = question.id
+  quest.question = question.question
+  quest.answer = question.answer
+  quest.room = room
 
   questions.push(quest);
 
   return questions;
 }
-
+/*
 function lastQuestion(room) {
   return questions.find((item) => item.room === room) == 10 ? true : false;
 }
-
+*/
 function roomLastQuestion(room) {
     console.log(questions)
   return questions.find((item) => item.room === room);
@@ -98,7 +96,7 @@ function answerQuestion(question, room, user, useranswer) {
     diff = question.answer - useranswer;
   }
 
-  const answer = new Answer ( question, user, diff, room );
+  const answer: Answer  = {question, user, diff, room};
   answers.push(answer);
 
   return answers;
@@ -109,6 +107,9 @@ module.exports = {
   rooms,
   questions,
   answers,
+  User,
+  Question,
+  Answer,
   userJoin,
   userLeave,
   roomLeave,
@@ -116,7 +117,7 @@ module.exports = {
   getCurrentUser,
   inRoomsList,
   newQuestion,
-  lastQuestion,
+  //lastQuestion,
   answerQuestion,
   roomLastQuestion,
   countAnswersOnQuestion,
