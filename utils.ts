@@ -54,7 +54,7 @@ function getRoomUsers(room) {
   return users.filter((user) => user.room === room);
 }
 
-function getCurrentUser(id) {
+function getUser(id) {
   return users.find((user) => user.id === id);
 }
 
@@ -74,17 +74,19 @@ function newQuestion(room, question) {
   return questions;
 }
 
-function lastQuestion(room) {
+function isAtMaxQuestionCount(room) {
   return questions.filter(item => item.room === room).length == 10 ? true : false;
 }
 
 function roomLastQuestion(room) {
-  console.log(questions)
-  return questions.find((item) => item.room === room);
+  const filteredQuestions = questions.filter((item) => item.room === room);
+
+  // return last item of the filtered list
+  return filteredQuestions[filteredQuestions.length - 1];
 }
 
-function countAnswersOnQuestion(question) {
-  return answers.find((item) => item.question === question);
+function getAnswersForQuestion(room, question) {
+  return answers.find((item) => item.room === room && item.question === question);
 }
 
 function tryAnswerQuestion(user, msg) {
@@ -95,6 +97,7 @@ function tryAnswerQuestion(user, msg) {
   // create new answer and push
 }
 
+/*
 function answerQuestion(question, room, user, useranswer) {
   let diff = 0;
 
@@ -109,6 +112,7 @@ function answerQuestion(question, room, user, useranswer) {
 
   return answers;
 }
+*/
 
 module.exports = {
   users,
