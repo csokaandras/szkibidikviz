@@ -90,8 +90,7 @@ io.on('connection', (socket) => {
     userLeave(socket.id);
 
     io.to(user.room).emit('message', 'System', `${user.username} left the chat...`);
-    io.to(user.room).emit('updateRoomUsers', getRoomUsers(user.room));
-
+    
     if (getRoomUsers(user.room).length == 0) {
       roomLeave(user.room);
       io.emit('updateRoomList', rooms);

@@ -1,4 +1,3 @@
-let usersListBox = document.querySelector('#usersList');
 let messagesBox = document.querySelector('#messages');
 let leaveRoomBtn = document.querySelector('#leaveRoomBtn');
 let sendBtn = document.querySelector('#sendBtn');
@@ -6,19 +5,6 @@ let newMsgField = document.querySelector('#newmsg');
 const socket = io();
 
 socket.emit('joinToChat');
-
-socket.on('updateRoomUsers', (roomUsers) => {
-  let ul = document.createElement('ul');
-
-  usersListBox.innerHTML = '';
-  usersListBox.appendChild(ul);
-
-  roomUsers.forEach((roomUser) => {
-    let li = document.createElement('li');
-    li.innerText = roomUser.username;
-    ul.appendChild(li);
-  });
-});
 
 socket.on('userConnected', (user) => {
   renderMessage('System', user.username + ' connected to the chat...');

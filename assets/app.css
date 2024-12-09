@@ -3,11 +3,16 @@ html, body {
     height:100%;
   }
   
-  body {
-      background: linear-gradient(-45deg, #2C3E50,  #000000);
-      background-size: 400% 400%;
-      animation: gradient 15s ease infinite;
-  }
+body {
+    /*background: linear-gradient(-45deg, #2C3E50,  #000000);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    */
+    background-image: url(low-poly-grid-haikei.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
   
   @keyframes gradient {
       0% {
@@ -67,4 +72,9 @@ footer{
     right: 6px;
     margin-top: -13px;
     font-style: italic;
+}
+
+.form-control:focus, .form-control, select {
+    background-color: #0c2e3b91;
+    border: 0;
 }
