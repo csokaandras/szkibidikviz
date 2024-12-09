@@ -59,7 +59,7 @@ function getRoomUsers(room:Room) {
   return room.users;
 }
 
-function getCurrentUser(id) {
+function getUser(id) {
   rooms.forEach(room =>{
     return room.users.find((user) => user.id === id);
   })
@@ -74,20 +74,31 @@ function newQuestion(room: Room, question: Question) {
   return room.questions;
 }
 
-function lastQuestion(room: Room) {
+function isAtMaxQuestionCount(room) {
   return room.questions.length == 10 ? true : false;
 }
 
-function roomLastQuestion(room: Room) {
-  console.log(room.questions)
-  return room.questions[room.questions.length]
+function roomLastQuestion(room) {
+  const filteredQuestions = room.questions
+
+  // return last item of the filtered list
+  return filteredQuestions[filteredQuestions.length - 1];
 }
 
-function countAnswersOnQuestion(room: Room, question: Question) {
+function getAnswersForQuestion(room: Room, question: Question) {
   return room.answers.find((item) => item.question === question);
 }
 
-function answerQuestion(question: Question, room: Room, user: User, useranswer: number) {
+function tryAnswerQuestion(user, msg) {
+  const answer = parseInt(msg);
+
+  // get last question in user.room
+
+  // create new answer and push
+}
+
+/*
+function answerQuestion(question, room, user, useranswer) {
   let diff = 0;
 
   if (useranswer > question.answer) {
@@ -98,9 +109,10 @@ function answerQuestion(question: Question, room: Room, user: User, useranswer: 
 
   const answer: Answer  = {question, user, diff};
   room.answers.push(answer);
-
   return room.answers;
 }
+*/
+
 
 module.exports = {
   rooms,
@@ -112,11 +124,10 @@ module.exports = {
   userLeave,
   roomLeave,
   getRoomUsers,
-  getCurrentUser,
+  getUser,
   inRoomsList,
   newQuestion,
-  lastQuestion,
-  answerQuestion,
   roomLastQuestion,
-  countAnswersOnQuestion,
+  tryAnswerQuestion,
+  isAtMaxQuestionCount,
 };
