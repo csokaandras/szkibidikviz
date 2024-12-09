@@ -73,13 +73,13 @@ function newQuestion(room, question) {
 
   return questions;
 }
-/*
+
 function lastQuestion(room) {
-  return questions.find((item) => item.room === room) == 10 ? true : false;
+  return questions.filter(item => item.room === room).length == 10 ? true : false;
 }
-*/
+
 function roomLastQuestion(room) {
-    console.log(questions)
+  console.log(questions)
   return questions.find((item) => item.room === room);
 }
 
@@ -121,7 +121,7 @@ module.exports = {
   getCurrentUser,
   inRoomsList,
   newQuestion,
-  //lastQuestion,
+  lastQuestion,
   answerQuestion,
   roomLastQuestion,
   countAnswersOnQuestion,
