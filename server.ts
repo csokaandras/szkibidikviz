@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 import * as ejs from 'ejs'
 import * as moment from 'moment';
 import session from 'express-session';
+import { Room, User, Answer, Question } from "./types";
 
 dotenv.config();
 const app = express();
@@ -14,14 +15,7 @@ const db = require('./assets/database');
 const port = process.env.PORT;
 
 const {
-  users,
   rooms,
-  questions,
-  answers,
-  User,
-  Question,
-  Answer,
-  Room,
   userJoin,
   userLeave,
   getRoomUsers,
@@ -33,6 +27,9 @@ const {
   lastQuestion,
   roomLastQuestion,
   countAnswersOnQuestion,
+  createRoom,
+  getRoom,
+  getUser,
 } = require('./utils');
 
 app.use('/assets', express.static('assets'));
@@ -50,29 +47,32 @@ app.get('/chat/:room/:user', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log(socket.id);
-
+  
   socket.on('getRoomList', () => {
     io.emit('updateRoomList', rooms);
   });
 
   socket.on('joinToChat', () => {
-    let user = userJoin(socket.id, session.user, session.room);
+    
+    if (!inRoomsList(session.room)) {
+      createRoom(session.room)
+      io.emit('updateRoomList', rooms);
+      io.to(session.room).emit('startQuiz');
+    }
+
+    console.log(session.room)
+    
+    let user: User = userJoin(socket.id, getUser(session.user), getRoom(session.room));
 
     socket.join(session.room);
 
     io.to(session.room).emit('updateRoomUsers', getRoomUsers(session.room));
-    io.to(session.room).emit('userConnected', user);
+    io.to(session.room).emit('userConnected', user.username);
 
     if (getRoomUsers(session.room).length >= 2) {
       io.to(session.room).emit('showNewQuestion', roomLastQuestion(session.room));
     }
 
-    if (!inRoomsList(session.room)) {
-      rooms.push(session.room);
-      io.emit('updateRoomList', rooms);
-      io.to(session.room).emit('startQuiz');
-    }
   });
 
   socket.on('getNewQuestion', () => {

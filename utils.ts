@@ -1,42 +1,36 @@
+import { Room, User, Answer, Question } from "./types";
+
 let rooms: Room[] = [];
 
-class Room{
-  users: User[]
-  questions: Question[]
-  answers: Answer[]
+function createRoom(name: string) {
+  let room: Room = new Room();
+  room.name = name;
+  room.users = [];
+  room.questions = [];
+  room.answers = [];
+
+  rooms.push(room);
 }
 
-class User {
-  id: string
-  username: string;
-}
-class Question {
-  id:number
-  question: string
-  answer: number
-}
-
-class Answer {
-  user: User
-  question: Question
-  diff: number
+function getRoom(name: string): Room {
+  return rooms.find((room) => room.name == name);
 }
 
 function userJoin(id: string, username: string, room: Room) {
-  const user: User = {id, username} ;
-  
+  const user: User = { id, username };
+
   room.users.push(user);
 
   return user;
 }
 
 function userLeave(id) {
-  let idx: number
-  let userroom: Room
-  rooms.forEach(room =>{
-    userroom = room
+  let idx: number;
+  let userroom: Room;
+  rooms.forEach((room) => {
+    userroom = room;
     idx = room.users.findIndex((user) => user.id === id);
-  })
+  });
 
   if (idx != -1) {
     userroom.users.splice(idx, 1);
@@ -55,18 +49,18 @@ function roomLeave(room: Room) {
   return rooms;
 }
 
-function getRoomUsers(room:Room) {
-  return room.users;
+function getRoomUsers(roomName: string) {
+  return rooms.find((room) => room.name == roomName).users;
 }
 
-function getUser(id) {
-  rooms.forEach(room =>{
-    return room.users.find((user) => user.id === id);
-  })
+function getUser(name) {
+  rooms.forEach((room) => {
+    return room.users.find((user) => user.username === name);
+  });
 }
 
-function inRoomsList(room: Room) {
-  return rooms.find((item) => item === room) ? true : false;
+function inRoomsList(roomName: string) {
+  return !!rooms.find((item) => item.name === roomName);
 }
 
 function newQuestion(room: Room, question: Question) {
@@ -74,12 +68,12 @@ function newQuestion(room: Room, question: Question) {
   return room.questions;
 }
 
-function isAtMaxQuestionCount(room) {
+function isAtMaxQuestionCount(room: Room) {
   return room.questions.length == 10 ? true : false;
 }
 
-function roomLastQuestion(room) {
-  const filteredQuestions = room.questions
+function roomLastQuestion(room: Room) {
+  const filteredQuestions = room.questions;
 
   // return last item of the filtered list
   return filteredQuestions[filteredQuestions.length - 1];
@@ -113,7 +107,6 @@ function answerQuestion(question, room, user, useranswer) {
 }
 */
 
-
 module.exports = {
   rooms,
   User,
@@ -130,4 +123,6 @@ module.exports = {
   roomLastQuestion,
   tryAnswerQuestion,
   isAtMaxQuestionCount,
+  createRoom,
+  getRoom,
 };
