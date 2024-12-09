@@ -3,11 +3,7 @@ import { Room, User, Answer, Question } from "./types";
 let rooms: Room[] = [];
 
 function createRoom(name: string) {
-  let room: Room = new Room();
-  room.name = name;
-  room.users = [];
-  room.questions = [];
-  room.answers = [];
+  let room: Room = new Room(name);
 
   rooms.push(room);
 }
