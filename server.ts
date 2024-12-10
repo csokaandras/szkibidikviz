@@ -6,7 +6,7 @@ import * as ejs from 'ejs'
 import * as moment from 'moment';
 import session from 'express-session';
 import { Room, User, Answer, Question } from "./types";
-import { createRoom, getRoom, getRoomUsers, inRoomsList, newQuestion, roomLeave, rooms, userJoin, userLeave } from './utils';
+import { App } from './utils';
 
 dotenv.config();
 const app = express();
@@ -14,6 +14,8 @@ const server = http.createServer(app);
 const io = new Server(server);
 const db = require('./assets/database');
 const port = process.env.PORT;
+
+const quiz = new App();
 
 app.use('/assets', express.static('assets'));
 
@@ -32,18 +34,18 @@ app.get('/chat/:room/:user', (req, res) => {
 io.on('connection', (socket) => {
   
   socket.on('getRoomList', () => {
-    io.emit('updateRoomList', rooms);
+    io.emit('updateRoomList', quiz.getRooms().map(x => x.name));
   });
 
   socket.on('joinToChat', () => {
     let room: Room;
 
-    if (!inRoomsList(session.room)) {
-      room = createRoom(session.room);
+    if (!quiz.doesRoomExist(session.room)) {
+      room = quiz.createRoom(session.room);
 
-      io.emit('updateRoomList', rooms);
+      io.emit('updateRoomList', quiz.getRooms());
       io.to(session.room).emit('startQuiz');
-    } else room = getRoom(session.room);
+    } else room = quiz.getRoom(session.room);
 
     let user: User = new User();
     user.id = socket.id
@@ -52,7 +54,7 @@ io.on('connection', (socket) => {
     room.userJoin(user);
     io.to(session.room).emit('userConnected', user);
     
-    if (getRoomUsers(session.room).length >= 2) {
+    if (room.users.length >= 2) {
       io.to(session.room).emit('showNewQuestion', );
       socket.join(session.room);
     }
@@ -60,6 +62,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('getNewQuestion', () => {
+    let room = quiz.getRoom(session.room)
+
     db.query(`SELECT * FROM questions ORDER BY rand() limit 1;`, (err, results) => {
       if (err) {
         console.log('Hiba a szerverhez való csatlakozáskor');
@@ -68,26 +72,28 @@ io.on('connection', (socket) => {
 
       console.log(results[0]);
       io.to(session.room).emit('showNewQuestion', results[0])
-      newQuestion(session.room, results[0]);
+
+      const question: Question = results[0];
+
+      room.newQuestion(question);
     });
   });
 
   socket.on('leaveChat', () => {
-    let room = getRoom(session.room)
+    let room = quiz.getRoom(session.room)
     let user = room.getUser(socket.id);
 
-    userLeave(socket.id);
+    room.userLeave(user);
 
     io.to(room.name).emit('message', 'System', `${user.username} left the chat...`);
     
-    if (getRoomUsers(room.name).length == 0) {
-      roomLeave(room);
-      io.emit('updateRoomList', rooms);
+    if (room.users.length == 0) {
+      io.emit('updateRoomList', quiz.getRooms().map(x => x.name));
     }
   });
 
   socket.on('sendMsg', (msg) => {
-    let room = getRoom(session.room)
+    let room = quiz.getRoom(session.room)
     let user = room.getUser(socket.id);
 
     room.tryAnswerQuestion(user, msg);
