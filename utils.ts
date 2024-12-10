@@ -2,10 +2,12 @@ import { Room, User, Answer, Question } from "./types";
 
 export let rooms: Room[] = [];
 
-export function createRoom(name: string) {
+export function createRoom(name: string): Room {
   let room: Room = new Room(name);
 
   rooms.push(room);
+
+  return room;
 }
 
 export function getRoom(name: string): Room {
