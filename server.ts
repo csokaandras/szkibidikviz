@@ -33,10 +33,7 @@ app.get('/chat/:room/:user', (req, res) => {
 
 io.on('connection', (socket) => {
   socket.on('getRoomList', () => {
-    io.emit(
-      'updateRoomList',
-      quiz.getRooms().map((x) => x.name)
-    );
+    io.emit('updateRoomList', quiz.getRoomNames());
   });
 
   socket.on('joinToChat', () => {
@@ -46,10 +43,7 @@ io.on('connection', (socket) => {
     if (!quiz.doesRoomExist(session.room)) {
       room = quiz.createRoom(session.room);
 
-      io.emit(
-        'updateRoomList',
-        quiz.getRooms().map((x) => x.name)
-      );
+      io.emit('updateRoomList', quiz.getRoomNames());
       // io.to(session.room).emit('startQuiz');
     } else room = quiz.getRoom(session.room);
 
@@ -92,10 +86,7 @@ io.on('connection', (socket) => {
     io.to(room.name).emit('message', 'System', `${user.username} left the chat...`);
 
     if (room.users.length == 0) {
-      io.emit(
-        'updateRoomList',
-        quiz.getRooms().map((x) => x.name)
-      );
+      io.emit('updateRoomList', quiz.getRoomNames());
     }
   });
 

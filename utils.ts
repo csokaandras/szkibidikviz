@@ -12,6 +12,7 @@ export class App {
   }
 
   getRooms = () => this.rooms;
+  getRoomNames = () => this.rooms.map(x => x.name);
 
   getRoom(name: string): Room {
     return this.rooms.find((room) => room.name == name);
