@@ -78,3 +78,7 @@ footer{
     background-color: #0c2e3b91;
     border: 0;
 }
+
+#countdown {
+    font-size: 150%;
+}
