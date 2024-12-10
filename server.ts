@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
     io.to(session.room).emit('userConnected', user);
 
     if (room.users.length >= 2) {
-      io.to(session.room).emit('showNewQuestion');
+      io.to(session.room).emit('startQuiz');
     }
   });
 

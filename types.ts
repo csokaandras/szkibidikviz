@@ -34,9 +34,12 @@ export class Room {
     return this.questions.length == 10 ? true : false;
   }
 
-  tryAnswerQuestion(user, msg) {
-    const answer = parseInt(msg);
-    const lastQuestion = this.questions[this.questions.length - 1];
+  get lastQuestion(): Question | undefined {
+    return this.questions[this.questions.length - 1];
+  }
+
+  tryAnswerQuestion(user: User, answer: number) {
+    const lastQuestion = this.lastQuestion;
 
     const diff = answer > lastQuestion.answer
       ? answer - lastQuestion.answer

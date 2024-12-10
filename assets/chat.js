@@ -6,6 +6,7 @@ const socket = io();
 
 
 const messageToggle = false;
+newMsgField.disabled = true;
 
 socket.emit('joinToChat');
 
@@ -19,10 +20,12 @@ socket.on('message', (from, message) => {
 
 socket.on('startQuiz', () => {
   socket.emit('getNewQuestion');
+  newMsgField.disabled = false;
 });
 
 socket.on('showNewQuestion', (result) => {
   renderMessage('System', result.question);
+  newMsgField.disabled = false;
 });
 
 function renderMessage(sender, message) {
@@ -58,7 +61,12 @@ leaveRoomBtn.addEventListener('click', () => {
 
 sendBtn.addEventListener('click', () => {
   if (newMsgField.value != '') {
-    socket.emit('sendMsg', newMsgField.value);
+    const messagePayload = {
+      user: user.username,
+      msg: newMsgField.value,
+    };
+
+    socket.emit('sendMsg', messagePayload);
     newMsgField.value = '';
     newMsgField.disabled = true;
   }
