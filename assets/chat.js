@@ -73,3 +73,17 @@ newMsgField.addEventListener('keypress', (event) => {
     }
   }
 });
+
+
+let timeLeft = 60; // Kezdő idő másodpercben
+const countdownElement = document.getElementById('countdown');
+
+const countdown = setInterval(() => {
+  if (timeLeft <= 0) {
+    clearInterval(countdown); // Időzítő leállítása
+    countdownElement.textContent = "Idő lejárt!";
+  } else {
+    countdownElement.textContent = `${timeLeft} másodperc van hátra`;
+    timeLeft--;
+  }
+}, 1000); // Minden másodpercben frissül
