@@ -31,7 +31,7 @@ export class Room {
   }
 
   get isAtMaxQuestionCount() {
-    return this.questions;
+    return this.questions.length == 10 ? true : false;
   }
 
   tryAnswerQuestion(user, msg) {
