@@ -1,18 +1,18 @@
 import { Room, User, Answer, Question } from "./types";
 
-let rooms: Room[] = [];
+export let rooms: Room[] = [];
 
-function createRoom(name: string) {
+export function createRoom(name: string) {
   let room: Room = new Room(name);
 
   rooms.push(room);
 }
 
-function getRoom(name: string): Room {
+export function getRoom(name: string): Room {
   return rooms.find((room) => room.name == name);
 }
 
-function userJoin(id: string, username: string, room: Room) {
+export function userJoin(id: string, username: string, room: Room) {
   const user: User = { id, username };
 
   room.users.push(user);
@@ -20,7 +20,7 @@ function userJoin(id: string, username: string, room: Room) {
   return user;
 }
 
-function userLeave(id) {
+export function userLeave(id) {
   let idx: number;
   let userroom: Room;
   rooms.forEach((room) => {
@@ -35,7 +35,7 @@ function userLeave(id) {
   return userroom.users;
 }
 
-function roomLeave(room: Room) {
+export function roomLeave(room: Room) {
   let idx = rooms.findIndex((item) => item === room);
 
   if (idx > -1) {
@@ -45,41 +45,42 @@ function roomLeave(room: Room) {
   return rooms;
 }
 
-function getRoomUsers(roomName: string) {
+export function getRoomUsers(roomName: string) {
   return rooms.find((room) => room.name == roomName).users;
 }
 
-function getUser(name) {
+export function getUser(name) {
   rooms.forEach((room) => {
-    return room.users.find((user) => user.username === name);
+    console.log(room.users.find(user => user.username == name))
+    return room.users.find((user) => user.username == name);
   });
 }
 
-function inRoomsList(roomName: string) {
+export function inRoomsList(roomName: string) {
   return !!rooms.find((item) => item.name === roomName);
 }
 
-function newQuestion(room: Room, question: Question) {
+export function newQuestion(room: Room, question: Question) {
   room.questions.push(question);
   return room.questions;
 }
 
-function isAtMaxQuestionCount(room: Room) {
+export function isAtMaxQuestionCount(room: Room) {
   return room.questions.length == 10 ? true : false;
 }
 
-function roomLastQuestion(room: Room) {
+export function roomLastQuestion(room: Room) {
   const filteredQuestions = room.questions;
 
   // return last item of the filtered list
   return filteredQuestions[filteredQuestions.length - 1];
 }
 
-function getAnswersForQuestion(room: Room, question: Question) {
+export function getAnswersForQuestion(room: Room, question: Question) {
   return room.answers.find((item) => item.question === question);
 }
 
-function tryAnswerQuestion(user, msg) {
+export function tryAnswerQuestion(user, msg) {
   const answer = parseInt(msg);
 
   // get last question in user.room
@@ -102,23 +103,3 @@ function answerQuestion(question, room, user, useranswer) {
   return room.answers;
 }
 */
-
-module.exports = {
-  rooms,
-  User,
-  Question,
-  Answer,
-  Room,
-  userJoin,
-  userLeave,
-  roomLeave,
-  getRoomUsers,
-  getUser,
-  inRoomsList,
-  newQuestion,
-  roomLastQuestion,
-  tryAnswerQuestion,
-  isAtMaxQuestionCount,
-  createRoom,
-  getRoom,
-};

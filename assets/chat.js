@@ -4,6 +4,7 @@ let sendBtn = document.querySelector('#sendBtn');
 let newMsgField = document.querySelector('#newmsg');
 const socket = io();
 
+
 const messageToggle = false;
 
 socket.emit('joinToChat');

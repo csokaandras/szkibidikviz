@@ -6,6 +6,7 @@ import * as ejs from 'ejs'
 import * as moment from 'moment';
 import session from 'express-session';
 import { Room, User, Answer, Question } from "./types";
+import { createRoom, getRoom, getRoomUsers, inRoomsList, newQuestion, roomLastQuestion, roomLeave, rooms, tryAnswerQuestion, userJoin, userLeave } from './utils';
 
 dotenv.config();
 const app = express();
@@ -13,24 +14,6 @@ const server = http.createServer(app);
 const io = new Server(server);
 const db = require('./assets/database');
 const port = process.env.PORT;
-
-const {
-  rooms,
-  userJoin,
-  userLeave,
-  getRoomUsers,
-  getCurrentUser,
-  inRoomsList,
-  roomLeave,
-  newQuestion,
-  tryAnswerQuestion,
-  lastQuestion,
-  roomLastQuestion,
-  countAnswersOnQuestion,
-  createRoom,
-  getRoom,
-  getUser,
-} = require('./utils');
 
 app.use('/assets', express.static('assets'));
 
@@ -62,8 +45,9 @@ io.on('connection', (socket) => {
 
     console.log(session.room)
     
-    let user: User = userJoin(socket.id, getUser(session.user), getRoom(session.room));
-
+    let user: User = userJoin(socket.id, getRoom(session.room), getRoom(session.room));
+    console.log(user)
+    
     socket.join(session.room);
 
     io.to(session.room).emit('updateRoomUsers', getRoomUsers(session.room));
@@ -89,7 +73,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('leaveChat', () => {
-    let user = getCurrentUser(socket.id);
+    let user = getUser(socket.id);
 
     userLeave(socket.id);
 
