@@ -6,7 +6,7 @@ import * as ejs from 'ejs'
 import * as moment from 'moment';
 import session from 'express-session';
 import { Room, User, Answer, Question } from "./types";
-import { createRoom, getRoom, getRoomUsers, inRoomsList, newQuestion, roomLastQuestion, roomLeave, rooms, tryAnswerQuestion, userJoin, userLeave } from './utils';
+import { createRoom, getRoom, getRoomUsers, inRoomsList, newQuestion, roomLeave, rooms, userJoin, userLeave } from './utils';
 
 dotenv.config();
 const app = express();
@@ -36,25 +36,29 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinToChat', () => {
-    
     if (!inRoomsList(session.room)) {
       createRoom(session.room)
+      let room = getRoom(session.room)
+      room.newQuestion 
       io.emit('updateRoomList', rooms);
       io.to(session.room).emit('startQuiz');
     }
-
-    console.log(session.room)
+    let room = getRoom(session.room)
     
-    let user: User = userJoin(socket.id, getRoom(session.room), getRoom(session.room));
-    console.log(user)
+    let user: User = new User();
+    user.id = socket.id
+    user.username = session.user
     
-    socket.join(session.room);
-
+    room.userJoin(user);
+    console.log(getRoom(session.room))
+    
+    
     io.to(session.room).emit('updateRoomUsers', getRoomUsers(session.room));
-    io.to(session.room).emit('userConnected', user.username);
-
+    io.to(session.room).emit('userConnected', user);
+    
     if (getRoomUsers(session.room).length >= 2) {
-      io.to(session.room).emit('showNewQuestion', roomLastQuestion(session.room));
+      io.to(session.room).emit('showNewQuestion', );
+      socket.join(session.room);
     }
 
   });
@@ -73,24 +77,26 @@ io.on('connection', (socket) => {
   });
 
   socket.on('leaveChat', () => {
-    let user = getUser(socket.id);
+    let room = getRoom(session.room)
+    let user = room.getUser(socket.id);
 
     userLeave(socket.id);
 
-    io.to(user.room).emit('message', 'System', `${user.username} left the chat...`);
+    io.to(room.name).emit('message', 'System', `${user.username} left the chat...`);
     
-    if (getRoomUsers(user.room).length == 0) {
-      roomLeave(user.room);
+    if (getRoomUsers(room.name).length == 0) {
+      roomLeave(room);
       io.emit('updateRoomList', rooms);
     }
   });
 
   socket.on('sendMsg', (msg) => {
-    let user = getCurrentUser(socket.id);
-    
-    tryAnswerQuestion(user, msg);
+    let room = getRoom(session.room)
+    let user = room.getUser(socket.id);
 
-    io.to(user.room).emit('message', user, msg);
+    room.tryAnswerQuestion(user, msg);
+
+    io.to(room.name).emit('message', user, msg);
   });
 });
 

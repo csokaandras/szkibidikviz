@@ -69,23 +69,8 @@ export function isAtMaxQuestionCount(room: Room) {
   return room.questions.length == 10 ? true : false;
 }
 
-export function roomLastQuestion(room: Room) {
-  const filteredQuestions = room.questions;
-
-  // return last item of the filtered list
-  return filteredQuestions[filteredQuestions.length - 1];
-}
-
 export function getAnswersForQuestion(room: Room, question: Question) {
   return room.answers.find((item) => item.question === question);
-}
-
-export function tryAnswerQuestion(user, msg) {
-  const answer = parseInt(msg);
-
-  // get last question in user.room
-
-  // create new answer and push
 }
 
 /*
