@@ -3,8 +3,6 @@ import { Room, User, Answer, Question } from "./types";
 export class App {
   private rooms: Room[] = [];
 
-  init() {}
-
   createRoom(name: string): Room {
     let room: Room = new Room(name);
 
@@ -12,6 +10,8 @@ export class App {
 
     return room;
   }
+
+  getRooms = () => this.rooms;
 
   getRoom(name: string): Room {
     return this.rooms.find((room) => room.name == name);
@@ -37,5 +37,5 @@ export class App {
     return null;
   }
 
-  doesRoomExist = (roomName) => !!this.rooms.find((item) => item.name === roomName);
+  doesRoomExist = (roomName: string) => !!this.rooms.find((item) => item.name === roomName);
 }
