@@ -36,24 +36,20 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinToChat', () => {
+    let room: Room;
+
     if (!inRoomsList(session.room)) {
-      createRoom(session.room)
-      let room = getRoom(session.room)
-      room.newQuestion 
+      room = createRoom(session.room);
+
       io.emit('updateRoomList', rooms);
       io.to(session.room).emit('startQuiz');
-    }
-    let room = getRoom(session.room)
-    
+    } else room = getRoom(session.room);
+
     let user: User = new User();
     user.id = socket.id
     user.username = session.user
     
     room.userJoin(user);
-    console.log(getRoom(session.room))
-    
-    
-    io.to(session.room).emit('updateRoomUsers', getRoomUsers(session.room));
     io.to(session.room).emit('userConnected', user);
     
     if (getRoomUsers(session.room).length >= 2) {
